@@ -1,0 +1,16 @@
+fastapi<1.0.0,>=0.115.0
+uvicorn[standard]<1.0.0,>=0.30.0
+jinja2<4.0.0,>=3.1.4
+sqlalchemy<3.0.0,>=2.0.30
+psycopg[binary]<4.0.0,>=3.1.19
+pydantic-settings<3.0.0,>=2.3.0
+email-validator<3.0.0,>=2.2.0
+python-jose[cryptography]<4.0.0,>=3.3.0
+passlib[bcrypt]<2.0.0,>=1.7.4
+celery<6.0.0,>=5.4.0
+redis<6.0.0,>=5.0.0
+httpx<1.0.0,>=0.27.0
+
+[dev]
+pytest<9.0.0,>=8.2.0
+pytest-asyncio<1.0.0,>=0.23.0

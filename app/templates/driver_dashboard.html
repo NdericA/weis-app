@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEIS | Driver Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/app.css?v=20260327b">
+</head>
+<body>
+    <div class="layout-shell">
+        <header class="site-header">
+            <div class="brand-block">
+                <div class="brand-mark">W</div>
+                <div>
+                    <p class="kicker">WEIS Ride Platform</p>
+                    <h1 id="dashboard-title">Driver dashboard</h1>
+                </div>
+            </div>
+            <div class="header-actions profile-actions">
+                <div class="profile-chip">
+                    <span class="summary-label">Signed in as</span>
+                    <strong id="profile-name">-</strong>
+                    <span id="profile-role">Driver</span>
+                </div>
+                <a href="/docs" class="button button-light">API docs</a>
+                <button id="logout-button" type="button" class="button button-dark" onclick="window.WEISAuth.logout()">Logout</button>
+            </div>
+        </header>
+
+        <main class="main-grid">
+            <section class="hero-banner">
+                <div>
+                    <p class="kicker" id="hero-kicker">Driver workspace</p>
+                    <h2 id="hero-headline">Manage incoming requests, trip progress, and earnings.</h2>
+                    <p class="hero-copy" id="hero-copy">
+                        This driver dashboard is dedicated to trip acceptance, arrival controls, trip completion, payout tracking, and rider thank-you replies.
+                    </p>
+                </div>
+                <div class="hero-stats">
+                    <article>
+                        <span>Account</span>
+                        <strong id="hero-role-card">Driver</strong>
+                    </article>
+                    <article>
+                        <span>Phone</span>
+                        <strong id="hero-phone-card">-</strong>
+                    </article>
+                    <article>
+                        <span>Status</span>
+                        <strong id="hero-status-card">Active</strong>
+                    </article>
+                </div>
+            </section>
+
+            <section class="panel map-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="kicker">Live trip board</p>
+                        <h3>Driver trip operations</h3>
+                    </div>
+                    <div id="global-status-pill" class="status-chip neutral">No active trip</div>
+                </div>
+                <div class="map-stage">
+                    <div class="grid-overlay"></div>
+                    <div id="route-line" class="route-line hidden"></div>
+                    <div id="pickup-pin" class="map-pin pickup hidden">Pickup</div>
+                    <div id="dropoff-pin" class="map-pin dropoff hidden">Dropoff</div>
+                    <div id="rider-pin" class="map-pin rider hidden">
+                        <span class="rider-avatar-icon" aria-hidden="true"></span>
+                        <span>Rider</span>
+                    </div>
+                    <div id="driver-pin" class="map-pin driver hidden">
+                        <span class="car-icon" aria-hidden="true">
+                            <span class="car-body"></span>
+                            <span class="car-top"></span>
+                            <span class="car-wheel wheel-left"></span>
+                            <span class="car-wheel wheel-right"></span>
+                        </span>
+                        <span>Driver</span>
+                    </div>
+                </div>
+                <div class="map-metrics">
+                    <article>
+                        <span>Driver to rider</span>
+                        <strong id="distance-to-rider">-</strong>
+                    </article>
+                    <article>
+                        <span>Trip stage</span>
+                        <strong id="trip-stage">Waiting for request</strong>
+                    </article>
+                    <article>
+                        <span>ETA</span>
+                        <strong id="trip-eta">-</strong>
+                    </article>
+                    <article>
+                        <span>Fare</span>
+                        <strong id="map-fare">-</strong>
+                    </article>
+                </div>
+            </section>
+
+            <section class="panel" id="driver-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="kicker">Driver app</p>
+                        <h3>Driver command center</h3>
+                    </div>
+                    <div id="driver-status-pill" class="status-chip success">Online</div>
+                </div>
+
+                <div class="tile-grid compact">
+                    <article class="info-tile">
+                        <span>Driver</span>
+                        <strong id="driver-name-card">-</strong>
+                        <p id="driver-vehicle-card">Vehicle pending</p>
+                    </article>
+                    <article class="info-tile">
+                        <span>Acceptance rate</span>
+                        <strong>88.5%</strong>
+                        <p>Strong standing for auto-match priority.</p>
+                    </article>
+                    <article class="info-tile">
+                        <span>Total earnings</span>
+                        <strong id="driver-total-earnings">XAF 28,500</strong>
+                        <p id="driver-total-copy">Base total before the current live trip settles.</p>
+                    </article>
+                </div>
+
+                <div class="driver-layout">
+                    <div class="request-card">
+                        <div class="panel-header small">
+                            <h4>Incoming request</h4>
+                            <button id="toggle-driver-status" class="button button-light small-button">Toggle availability</button>
+                        </div>
+                        <div id="driver-request-box" class="empty-block">
+                            No ride is waiting. Ask the rider to submit a request.
+                        </div>
+                        <div class="button-row left" id="driver-action-row">
+                            <button id="decline-ride" class="button button-light danger" disabled>Decline</button>
+                            <button id="accept-ride" class="button button-dark" disabled>Accept ride</button>
+                        </div>
+                    </div>
+
+                    <div class="request-card">
+                        <div class="panel-header small">
+                            <h4>Trip controls</h4>
+                        </div>
+                        <div id="driver-trip-box" class="empty-block">
+                            Accept a ride to unlock trip controls.
+                        </div>
+                        <div class="button-row left">
+                            <button id="arrived-trip" class="button button-light" disabled>Arrived</button>
+                            <button id="start-trip" class="button button-light" disabled>Start trip</button>
+                            <button id="complete-trip" class="button button-dark" disabled>Complete trip</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="driver-layout settlement-layout">
+                    <div class="request-card">
+                        <div class="panel-header small">
+                            <h4>Trip earnings</h4>
+                        </div>
+                        <div id="driver-earnings-box" class="request-summary compact-summary">
+                            <div>
+                                <span class="summary-label">Base trip</span>
+                                <strong>XAF -</strong>
+                            </div>
+                            <div>
+                                <span class="summary-label">Tip</span>
+                                <strong>XAF -</strong>
+                            </div>
+                            <div>
+                                <span class="summary-label">Trip total</span>
+                                <strong>XAF -</strong>
+                            </div>
+                            <div>
+                                <span class="summary-label">Running total</span>
+                                <strong>XAF 28,500</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="request-card">
+                        <div class="panel-header small">
+                            <h4>Reply to rider</h4>
+                        </div>
+                        <div id="driver-thanks-box" class="empty-block">
+                            Tip confirmation from the rider unlocks a thank-you reply.
+                        </div>
+                        <div class="thankyou-actions">
+                            <div class="quick-replies">
+                                <button type="button" class="button button-light reply-button" data-reply="Thank you for riding with WEIS.">Quick thanks</button>
+                                <button type="button" class="button button-light reply-button" data-reply="Thank you for the tip. I appreciate it.">Thanks for the tip</button>
+                            </div>
+                            <label class="reply-input">
+                                Custom short reply
+                                <input id="driver-reply-input" maxlength="90" placeholder="Thanks and have a safe day.">
+                            </label>
+                            <div class="button-row left">
+                                <button id="send-driver-reply" class="button button-dark" disabled>Send reply</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel" id="ops-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="kicker">Ops and admin</p>
+                        <h3>Platform snapshot</h3>
+                    </div>
+                    <button id="refresh-pricing" class="button button-light small-button">Refresh data</button>
+                </div>
+
+                <div class="ops-grid">
+                    <div class="ops-kpis">
+                        <article class="metric-card">
+                            <span>Active trips</span>
+                            <strong id="active-trips">-</strong>
+                        </article>
+                        <article class="metric-card">
+                            <span>Online drivers</span>
+                            <strong id="online-drivers">-</strong>
+                        </article>
+                        <article class="metric-card">
+                            <span>Active riders</span>
+                            <strong id="active-riders">-</strong>
+                        </article>
+                        <article class="metric-card">
+                            <span>Daily revenue</span>
+                            <strong id="daily-revenue">-</strong>
+                        </article>
+                    </div>
+                    <div class="pricing-block">
+                        <h4>Live pricing matrix</h4>
+                        <div id="pricing-table" class="pricing-table"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="/static/js/auth.js?v=20260327b"></script>
+    <script src="/static/js/app.js?v=20260327b"></script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEIS | Sign up</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/app.css?v=20260327b">
+</head>
+<body>
+    <div class="layout-shell auth-shell">
+        <header class="site-header">
+            <div class="brand-block">
+                <div class="brand-mark">W</div>
+                <div>
+                    <p class="kicker">WEIS Ride Platform</p>
+                    <h1>Create your account</h1>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="/">Home</a>
+                <a href="/login" class="button button-light">Login</a>
+            </div>
+        </header>
+
+        <main class="auth-main">
+            <section class="panel auth-form-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="kicker">Sign up</p>
+                        <h3>Create a rider or driver account</h3>
+                    </div>
+                </div>
+                <form id="signup-form" class="stack-form">
+                    <div class="field-grid">
+                        <label>
+                            Role
+                            <select name="role" id="signup-role">
+                                <option value="rider">Rider</option>
+                                <option value="driver">Driver</option>
+                            </select>
+                        </label>
+                        <label>
+                            Full name
+                            <input name="full_name" required>
+                        </label>
+                    </div>
+                    <div class="field-grid">
+                        <label>
+                            Phone number
+                            <input name="phone_number" placeholder="+237670000000" required>
+                        </label>
+                        <label>
+                            Email
+                            <input name="email" type="email" placeholder="name@weis.cm">
+                        </label>
+                    </div>
+
+                    <div id="driver-signup-fields" class="hidden">
+                        <div class="field-grid">
+                            <label>
+                                License number
+                                <input name="license_number" value="DL-CM-20481">
+                            </label>
+                            <label>
+                                National ID
+                                <input name="national_id_number" value="CMR-1987745">
+                            </label>
+                        </div>
+                        <div class="field-grid">
+                            <label>
+                                Vehicle make
+                                <input name="vehicle_make" value="Toyota">
+                            </label>
+                            <label>
+                                Vehicle model
+                                <input name="vehicle_model" value="Corolla">
+                            </label>
+                        </div>
+                        <div class="field-grid">
+                            <label>
+                                Vehicle color
+                                <input name="vehicle_color" value="Silver">
+                            </label>
+                            <label>
+                                Plate number
+                                <input name="plate_number" value="LT-234-AB">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="button-row left">
+                        <button type="submit" class="button button-dark">Create account</button>
+                    </div>
+                    <p id="signup-status" class="tip-status">Driver signup also stores onboarding details for the driver dashboard.</p>
+                </form>
+            </section>
+        </main>
+
+        <script src="/static/js/auth.js?v=20260327b"></script>
+    </div>
+</body>
+</html>

@@ -1,3 +1,25 @@
+Metadata-Version: 2.4
+Name: weis-app
+Version: 0.1.0
+Summary: WEIS ride-hailing platform backend scaffold for Cameroon
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi<1.0.0,>=0.115.0
+Requires-Dist: uvicorn[standard]<1.0.0,>=0.30.0
+Requires-Dist: jinja2<4.0.0,>=3.1.4
+Requires-Dist: sqlalchemy<3.0.0,>=2.0.30
+Requires-Dist: psycopg[binary]<4.0.0,>=3.1.19
+Requires-Dist: pydantic-settings<3.0.0,>=2.3.0
+Requires-Dist: email-validator<3.0.0,>=2.2.0
+Requires-Dist: python-jose[cryptography]<4.0.0,>=3.3.0
+Requires-Dist: passlib[bcrypt]<2.0.0,>=1.7.4
+Requires-Dist: celery<6.0.0,>=5.4.0
+Requires-Dist: redis<6.0.0,>=5.0.0
+Requires-Dist: httpx<1.0.0,>=0.27.0
+Provides-Extra: dev
+Requires-Dist: pytest<9.0.0,>=8.2.0; extra == "dev"
+Requires-Dist: pytest-asyncio<1.0.0,>=0.23.0; extra == "dev"
+
 # WEIS
 
 WEIS is a Cameroon-focused ride-hailing platform scaffold built in Python with FastAPI. This repository provides a production-oriented backend foundation for riders, drivers, fleet owners, admin teams, support operations, realtime trip tracking, wallet-based payments, and configurable city pricing.

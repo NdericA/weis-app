@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEIS | Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/app.css?v=20260327b">
+</head>
+<body>
+    <div class="layout-shell auth-shell">
+        <header class="site-header">
+            <div class="brand-block">
+                <div class="brand-mark">W</div>
+                <div>
+                    <p class="kicker">WEIS Ride Platform</p>
+                    <h1>Login</h1>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="/">Home</a>
+                <a href="/signup" class="button button-light">Create account</a>
+            </div>
+        </header>
+
+        <main class="auth-main">
+            <section class="panel auth-form-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="kicker">Access your account</p>
+                        <h3>Continue to your WEIS dashboard</h3>
+                    </div>
+                </div>
+                <form id="login-form" class="stack-form">
+                    <div class="field-grid">
+                        <label>
+                            Phone number
+                            <input name="phone_number" value="+237670000001" required>
+                        </label>
+                        <label>
+                            Role
+                            <select name="role" id="login-role">
+                                <option value="rider">Rider</option>
+                                <option value="driver">Driver</option>
+                            </select>
+                        </label>
+                    </div>
+                    <label>
+                        Full name
+                        <input name="full_name" placeholder="Used to verify the local demo account" required>
+                    </label>
+                    <div class="button-row left">
+                        <button type="submit" class="button button-dark">Login</button>
+                    </div>
+                    <p id="login-status" class="tip-status">Use an account you created from the sign-up page.</p>
+                </form>
+            </section>
+        </main>
+
+        <script src="/static/js/auth.js?v=20260327b"></script>
+    </div>
+</body>
+</html>

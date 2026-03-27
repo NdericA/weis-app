@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEIS | Rider Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/app.css?v=20260327b">
+</head>
+<body>
+    <div class="layout-shell">
+        <header class="site-header">
+            <div class="brand-block">
+                <div class="brand-mark">W</div>
+                <div>
+                    <p class="kicker">WEIS Ride Platform</p>
+                    <h1 id="dashboard-title">Rider dashboard</h1>
+                </div>
+            </div>
+            <div class="header-actions profile-actions">
+                <div class="profile-chip">
+                    <span class="summary-label">Signed in as</span>
+                    <strong id="profile-name">-</strong>
+                    <span id="profile-role">Rider</span>
+                </div>
+                <a href="/docs" class="button button-light">API docs</a>
+                <button id="logout-button" type="button" class="button button-dark" onclick="window.WEISAuth.logout()">Logout</button>
+            </div>
+        </header>
+
+        <main class="main-grid">
+            <section class="hero-banner">
+                <div>
+                    <p class="kicker" id="hero-kicker">Rider workspace</p>
+                    <h2 id="hero-headline">Request rides, track progress, and settle trips.</h2>
+                    <p class="hero-copy" id="hero-copy">
+                        This rider dashboard is dedicated to trip booking, driver tracking, trip progress, and post-trip tipping.
+                    </p>
+                </div>
+                <div class="hero-stats">
+                    <article>
+                        <span>Account</span>
+                        <strong id="hero-role-card">Rider</strong>
+                    </article>
+                    <article>
+                        <span>Phone</span>
+                        <strong id="hero-phone-card">-</strong>
+                    </article>
+                    <article>
+                        <span>Status</span>
+                        <strong id="hero-status-card">Active</strong>
+                    </article>
+                </div>
+            </section>
+
+            <section class="panel map-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="kicker">Live trip board</p>
+                        <h3>Rider trip tracking</h3>
+                    </div>
+                    <div id="global-status-pill" class="status-chip neutral">No active trip</div>
+                </div>
+                <div class="map-stage">
+                    <div class="grid-overlay"></div>
+                    <div id="route-line" class="route-line hidden"></div>
+                    <div id="pickup-pin" class="map-pin pickup hidden">Pickup</div>
+                    <div id="dropoff-pin" class="map-pin dropoff hidden">Dropoff</div>
+                    <div id="rider-pin" class="map-pin rider hidden">
+                        <span class="rider-avatar-icon" aria-hidden="true"></span>
+                        <span>Rider</span>
+                    </div>
+                    <div id="driver-pin" class="map-pin driver hidden">
+                        <span class="car-icon" aria-hidden="true">
+                            <span class="car-body"></span>
+                            <span class="car-top"></span>
+                            <span class="car-wheel wheel-left"></span>
+                            <span class="car-wheel wheel-right"></span>
+                        </span>
+                        <span>Driver</span>
+                    </div>
+                </div>
+                <div class="map-metrics">
+                    <article>
+                        <span>Driver to rider</span>
+                        <strong id="distance-to-rider">-</strong>
+                    </article>
+                    <article>
+                        <span>Trip stage</span>
+                        <strong id="trip-stage">Waiting for request</strong>
+                    </article>
+                    <article>
+                        <span>ETA</span>
+                        <strong id="trip-eta">-</strong>
+                    </article>
+                    <article>
+                        <span>Fare</span>
+                        <strong id="map-fare">-</strong>
+                    </article>
+                </div>
+            </section>
+
+            <section class="panel" id="rider-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="kicker">Rider app</p>
+                        <h3>Request a ride</h3>
+                    </div>
+                    <div id="rider-status-pill" class="status-chip neutral">Idle</div>
+                </div>
+
+                <form id="booking-form" class="stack-form">
+                    <div class="field-grid">
+                        <label>
+                            Pickup
+                            <input name="pickup_address" value="Bonapriso, Douala" required>
+                        </label>
+                        <label>
+                            Destination
+                            <input name="destination_address" value="Akwa, Douala" required>
+                        </label>
+                    </div>
+                    <div class="field-grid triple">
+                        <label>
+                            Ride type
+                            <select name="ride_type">
+                                <option value="economy">Economy</option>
+                                <option value="standard">Standard</option>
+                                <option value="premium">Premium</option>
+                                <option value="xl">XL</option>
+                                <option value="moto">Moto</option>
+                                <option value="intercity">Intercity</option>
+                            </select>
+                        </label>
+                        <label>
+                            Distance (km)
+                            <input name="distance_km" type="number" min="1" step="0.1" value="6.4" required>
+                        </label>
+                        <label>
+                            Duration (min)
+                            <input name="duration_minutes" type="number" min="1" step="1" value="16" required>
+                        </label>
+                    </div>
+                    <div class="field-grid triple">
+                        <label>
+                            Payment
+                            <select name="payment_method">
+                                <option value="cash">Cash</option>
+                                <option value="wallet">Wallet</option>
+                                <option value="card">Card</option>
+                                <option value="mobile_money">Mobile Money</option>
+                            </select>
+                        </label>
+                        <label>
+                            Rider ID
+                            <input name="rider_id" id="rider-id-input" value="demo-rider-001" required>
+                        </label>
+                        <label>
+                            Pickup note
+                            <input name="notes" value="Meet by the main gate">
+                        </label>
+                    </div>
+                    <div class="button-row">
+                        <button type="button" class="button button-light" id="estimate-button">Estimate fare</button>
+                        <button type="submit" class="button button-dark">Request ride</button>
+                    </div>
+                </form>
+
+                <div class="tile-grid">
+                    <article class="info-tile">
+                        <span>Fare estimate</span>
+                        <strong id="estimate-total">XAF -</strong>
+                        <p id="estimate-breakdown">Use Estimate fare to calculate the trip price.</p>
+                    </article>
+                    <article class="info-tile">
+                        <span>Request state</span>
+                        <strong id="rider-request-state">No active request</strong>
+                        <p id="rider-request-copy">When a request is live, assignment updates appear here.</p>
+                    </article>
+                    <article class="info-tile">
+                        <span>Live distance</span>
+                        <strong id="rider-distance-live">-</strong>
+                        <p id="rider-distance-copy">Driver distance to pickup updates in real time.</p>
+                    </article>
+                </div>
+
+                <div id="rider-progress-panel" class="progress-panel hidden">
+                    <span class="summary-label">Trip progress</span>
+                    <div class="progress-list">
+                        <div class="progress-step" data-step="requested">
+                            <strong>Ride requested</strong>
+                            <span>Your request has been submitted.</span>
+                        </div>
+                        <div class="progress-step" data-step="accepted">
+                            <strong>Driver accepted</strong>
+                            <span>A driver accepted and is heading to pickup.</span>
+                        </div>
+                        <div class="progress-step" data-step="driver_arrived">
+                            <strong>Driver arrived</strong>
+                            <span>Your driver is at the pickup location.</span>
+                        </div>
+                        <div class="progress-step" data-step="on_trip">
+                            <strong>Trip started</strong>
+                            <span>The trip is in progress to your destination.</span>
+                        </div>
+                        <div class="progress-step" data-step="completed">
+                            <strong>Trip completed</strong>
+                            <span>You have arrived and can now tip your driver.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="rider-driver-info" class="driver-reply-box hidden">
+                    <span class="summary-label">Assigned driver</span>
+                    <strong id="rider-driver-name">-</strong>
+                    <p id="rider-driver-vehicle" class="tip-status">Driver and car details appear after acceptance.</p>
+                </div>
+
+                <div id="tip-panel" class="tip-panel hidden">
+                    <div>
+                        <p class="kicker">Optional rider tip</p>
+                        <h4>Tip your driver after the trip</h4>
+                    </div>
+                    <div class="tip-options">
+                        <button type="button" class="button button-light tip-button" data-tip="500">XAF 500</button>
+                        <button type="button" class="button button-light tip-button" data-tip="1000">XAF 1,000</button>
+                        <button type="button" class="button button-light tip-button" data-tip="2000">XAF 2,000</button>
+                        <button type="button" class="button button-light tip-button" data-tip="0">No tip</button>
+                    </div>
+                    <div class="custom-tip-row">
+                        <label class="custom-tip-label">
+                            Custom tip amount
+                            <input id="custom-tip-input" type="number" min="0" step="100" placeholder="Enter XAF amount">
+                        </label>
+                        <button type="button" id="apply-custom-tip" class="button button-light">Use custom tip</button>
+                    </div>
+                    <div class="button-row left">
+                        <button type="button" id="confirm-tip-button" class="button button-dark" disabled>Confirm tip</button>
+                    </div>
+                    <p id="tip-status" class="tip-status">Tips are optional and only appear after trip completion.</p>
+                    <div id="rider-reply-box" class="driver-reply-box hidden">
+                        <span class="summary-label">Driver reply</span>
+                        <strong id="rider-reply-message">-</strong>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="/static/js/auth.js?v=20260327b"></script>
+    <script src="/static/js/app.js?v=20260327b"></script>
+</body>
+</html>
