@@ -40,11 +40,19 @@ class ReplyRequest(BaseModel):
     message: str
 
 
+class MessageRequest(BaseModel):
+    sender_id: str
+    sender_role: str
+    sender_name: str
+    message: str
+
+
 class LiveStateResponse(BaseModel):
     driver_statuses: dict[str, str]
     request: dict | None = None
     trip: dict | None = None
     estimate: dict | None = None
+    messages: list[dict] = []
     arrival_ready: bool = False
     selected_tip_amount: Decimal | None = None
     confirmed_tip_amount: Decimal | None = None

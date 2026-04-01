@@ -15,6 +15,11 @@ const replyButtons = Array.from(document.querySelectorAll(".reply-button"));
 const sendDriverReplyButton = document.getElementById("send-driver-reply");
 const driverReplyInput = document.getElementById("driver-reply-input");
 const logoutButton = document.getElementById("logout-button");
+const languageToggle = document.getElementById("language-toggle");
+const riderChatInput = document.getElementById("rider-chat-input");
+const sendRiderMessageButton = document.getElementById("send-rider-message");
+const driverChatInput = document.getElementById("driver-chat-input");
+const sendDriverMessageButton = document.getElementById("send-driver-message");
 
 const DEFAULT_POSITIONS = {
     riderPosition: { x: 22, y: 62 },
@@ -28,6 +33,7 @@ const state = {
     estimate: null,
     request: null,
     trip: null,
+    messages: [],
     arrivalReady: false,
     selectedTipAmount: null,
     confirmedTipAmount: null,
@@ -39,7 +45,8 @@ const state = {
     pickupPosition: { ...DEFAULT_POSITIONS.pickupPosition },
     dropoffPosition: { ...DEFAULT_POSITIONS.dropoffPosition },
     driverPosition: { ...DEFAULT_POSITIONS.driverPosition },
-    pollingId: null
+    pollingId: null,
+    language: localStorage.getItem("weis_language") || "en"
 };
 
 function $(id) {
@@ -54,6 +61,47 @@ function getSession() {
     const session = sessionStorage.getItem("weis_session");
     return session ? JSON.parse(session) : null;
 }
+
+const translations = {
+    en: {
+        dashboardRider: "Rider dashboard",
+        dashboardDriver: "Driver dashboard",
+        language: "Language",
+        riderRequestTitle: "Request a ride",
+        driverCommandCenter: "Driver command center",
+        riderChatTitle: "Chat with driver",
+        driverChatTitle: "Chat with rider",
+        riderChatPlaceholder: "Message your driver before pickup",
+        driverChatPlaceholder: "Message the rider before pickup",
+        send: "Send",
+        estimate: "Estimate fare",
+        requestRide: "Request ride",
+        arrived: "Arrived",
+        startTrip: "Start trip",
+        completeTrip: "Complete trip",
+        toggleAvailability: "Toggle availability",
+        logout: "Logout"
+    },
+    fr: {
+        dashboardRider: "Tableau de bord passager",
+        dashboardDriver: "Tableau de bord chauffeur",
+        language: "Langue",
+        riderRequestTitle: "Demander une course",
+        driverCommandCenter: "Centre de commande chauffeur",
+        riderChatTitle: "Discussion avec le chauffeur",
+        driverChatTitle: "Discussion avec le passager",
+        riderChatPlaceholder: "Envoyez un message au chauffeur avant la prise en charge",
+        driverChatPlaceholder: "Envoyez un message au passager avant la prise en charge",
+        send: "Envoyer",
+        estimate: "Estimer le tarif",
+        requestRide: "Demander la course",
+        arrived: "Arrive",
+        startTrip: "Commencer la course",
+        completeTrip: "Terminer la course",
+        toggleAvailability: "Changer la disponibilite",
+        logout: "Se deconnecter"
+    }
+};
 
 function requireSession() {
     if (!window.location.pathname.startsWith("/dashboard")) {
@@ -152,6 +200,7 @@ function applyLiveState(liveState) {
     state.estimate = normalizeEstimate(liveState.estimate);
     state.request = liveState.request;
     state.trip = normalizeTrip(liveState.trip);
+    state.messages = liveState.messages || [];
     state.arrivalReady = Boolean(liveState.arrival_ready);
     if (liveState.selected_tip_amount !== null) {
         state.selectedTipAmount = Number(liveState.selected_tip_amount);
@@ -256,6 +305,75 @@ function hydrateDashboardIdentity() {
     if (session.role === "rider" && hasElement("rider-id-input")) $("rider-id-input").value = session.id;
     if (session.role === "driver" && hasElement("driver-name-card")) $("driver-name-card").textContent = session.full_name;
     if (session.role === "driver" && hasElement("driver-vehicle-card")) $("driver-vehicle-card").textContent = currentDriverVehicle();
+}
+
+function translate(key) {
+    return translations[state.language]?.[key] || translations.en[key] || key;
+}
+
+function applyLanguage() {
+    document.documentElement.lang = state.language;
+    setText("language-label", translate("language"));
+    if (session?.role === "rider") {
+        setText("dashboard-title", translate("dashboardRider"));
+    }
+    if (session?.role === "driver") {
+        setText("dashboard-title", translate("dashboardDriver"));
+    }
+    const riderPanelTitle = document.querySelector("#rider-panel .panel-header h3");
+    if (riderPanelTitle) {
+        riderPanelTitle.textContent = translate("riderRequestTitle");
+    }
+    const driverPanelTitle = document.querySelector("#driver-panel .panel-header h3");
+    if (driverPanelTitle) {
+        driverPanelTitle.textContent = translate("driverCommandCenter");
+    }
+    setText("chat-title", session?.role === "driver" ? translate("driverChatTitle") : translate("riderChatTitle"));
+    if (riderChatInput) riderChatInput.placeholder = translate("riderChatPlaceholder");
+    if (driverChatInput) driverChatInput.placeholder = translate("driverChatPlaceholder");
+    if (sendRiderMessageButton) sendRiderMessageButton.textContent = translate("send");
+    if (sendDriverMessageButton) sendDriverMessageButton.textContent = translate("send");
+    if (estimateButton) estimateButton.textContent = translate("estimate");
+    if (bookingForm) bookingForm.querySelector("button[type='submit']").textContent = translate("requestRide");
+    if (arrivedTripButton) arrivedTripButton.textContent = translate("arrived");
+    if (startTripButton) startTripButton.textContent = translate("startTrip");
+    if (completeTripButton) completeTripButton.textContent = translate("completeTrip");
+    if (toggleDriverStatusButton) toggleDriverStatusButton.textContent = translate("toggleAvailability");
+    if (logoutButton) logoutButton.textContent = translate("logout");
+}
+
+function messagingEnabled() {
+    return Boolean(state.request || (state.trip && ["accepted", "driver_arrived"].includes(state.trip.stage)));
+}
+
+function renderChat() {
+    const chatLog = session?.role === "driver" ? $("driver-chat-log") : $("rider-chat-log");
+    const chatPanel = session?.role === "driver" ? null : $("rider-chat-panel");
+    if (!chatLog) {
+        return;
+    }
+    if (chatPanel && chatPanel.id === "rider-chat-panel") {
+        chatPanel.classList.toggle("hidden", !messagingEnabled());
+    }
+    if (!messagingEnabled()) {
+        chatLog.innerHTML = `<div class="chat-empty">${state.language === "fr" ? "La messagerie est disponible entre la demande et la prise en charge." : "Messaging is available from request until pickup."}</div>`;
+        if (sendRiderMessageButton) sendRiderMessageButton.disabled = true;
+        if (sendDriverMessageButton) sendDriverMessageButton.disabled = true;
+        return;
+    }
+    if (state.messages.length === 0) {
+        chatLog.innerHTML = `<div class="chat-empty">${state.language === "fr" ? "Aucun message pour le moment." : "No messages yet."}</div>`;
+    } else {
+        chatLog.innerHTML = state.messages.map((entry) => `
+            <div class="chat-message ${entry.sender_id === session?.id ? "self" : ""}">
+                <strong>${entry.sender_name}</strong>
+                <span>${entry.message}</span>
+            </div>
+        `).join("");
+        chatLog.scrollTop = chatLog.scrollHeight;
+    }
+    if (sendRiderMessageButton) sendRiderMessageButton.disabled = !riderChatInput.value.trim();
+    if (sendDriverMessageButton) sendDriverMessageButton.disabled = !driverChatInput.value.trim();
 }
 
 function drawRouteLine() {
@@ -648,12 +766,14 @@ function renderMap() {
 }
 
 function renderAll() {
+    applyLanguage();
     renderEstimate();
     renderRider();
     renderDriverRequest();
     renderDriverTrip();
     renderDriverEarnings();
     renderDriverReply();
+    renderChat();
     renderMap();
 }
 
@@ -845,6 +965,22 @@ async function sendDriverReply() {
     renderAll();
 }
 
+async function sendMessage(inputElement) {
+    const message = inputElement ? inputElement.value.trim() : "";
+    if (!session || !message || !messagingEnabled()) {
+        return;
+    }
+    const liveState = await liveRequest("message", {
+        sender_id: session.id,
+        sender_role: session.role,
+        sender_name: session.full_name,
+        message
+    });
+    inputElement.value = "";
+    applyLiveState(liveState);
+    renderAll();
+}
+
 async function toggleDriverAvailability() {
     if (!session || session.role !== "driver") {
         return;
@@ -928,6 +1064,18 @@ replyButtons.forEach((button) => {
     button.addEventListener("click", () => useQuickReply(button.dataset.reply));
 });
 if (sendDriverReplyButton) sendDriverReplyButton.addEventListener("click", sendDriverReply);
+if (sendRiderMessageButton) sendRiderMessageButton.addEventListener("click", () => sendMessage(riderChatInput));
+if (sendDriverMessageButton) sendDriverMessageButton.addEventListener("click", () => sendMessage(driverChatInput));
+if (riderChatInput) riderChatInput.addEventListener("input", renderChat);
+if (driverChatInput) driverChatInput.addEventListener("input", renderChat);
+if (languageToggle) {
+    languageToggle.value = state.language;
+    languageToggle.addEventListener("change", (event) => {
+        state.language = event.target.value;
+        localStorage.setItem("weis_language", state.language);
+        renderAll();
+    });
+}
 if (logoutButton) {
     logoutButton.addEventListener("click", () => {
         if (window.WEISAuth) {

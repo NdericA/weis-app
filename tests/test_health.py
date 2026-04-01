@@ -53,6 +53,77 @@ def test_driver_dashboard_page_renders() -> None:
     assert "Driver dashboard" in response.text
 
 
+def test_admin_dashboard_page_renders() -> None:
+    client = TestClient(app)
+    response = client.get("/dashboard/admin")
+    assert response.status_code == 200
+    assert "Admin dashboard" in response.text
+
+
+def test_driver_review_page_renders() -> None:
+    client = TestClient(app)
+    response = client.get("/dashboard/driver-review")
+    assert response.status_code == 200
+    assert "Driver application review" in response.text
+
+
+def test_driver_application_review_api_flow() -> None:
+    client = TestClient(app)
+
+    onboarding = client.post(
+        "/api/v1/drivers/onboarding",
+        json={
+            "full_name": "Review Driver",
+            "phone_number": "+237677001122",
+            "license_number": "DL-CM-55555",
+            "national_id_number": "CMR-55555",
+            "vehicle_make": "Toyota",
+            "vehicle_model": "Corolla",
+            "vehicle_color": "Black",
+            "plate_number": "LT-555-AA",
+        },
+    )
+    assert onboarding.status_code == 200
+    assert onboarding.json()["approval_status"] == "pending"
+
+    applications = client.get("/api/v1/drivers/applications")
+    assert applications.status_code == 200
+    assert any(item["phone_number"] == "+237677001122" for item in applications.json())
+
+    rejected = client.post(
+        "/api/v1/drivers/applications/reject",
+        json={
+            "phone_number": "+237677001122",
+            "reason": "Insurance document is missing.",
+            "additional_info_required": True,
+        },
+    )
+    assert rejected.status_code == 200
+    assert rejected.json()["approval_status"] == "rejected"
+    assert rejected.json()["rejection_reason"] == "Insurance document is missing."
+
+    resubmitted = client.post(
+        "/api/v1/drivers/applications/additional-info",
+        json={
+            "phone_number": "+237677001122",
+            "additional_info": "Insurance certificate uploaded and plate photo updated.",
+        },
+    )
+    assert resubmitted.status_code == 200
+    assert resubmitted.json()["approval_status"] == "pending"
+
+    approved = client.post(
+        "/api/v1/drivers/applications/approve",
+        json={
+            "phone_number": "+237677001122",
+            "reason": "",
+            "additional_info_required": False,
+        },
+    )
+    assert approved.status_code == 200
+    assert approved.json()["approval_status"] == "approved"
+
+
 def test_live_trip_flow_updates_all_stages() -> None:
     live_ops_service.reset()
     client = TestClient(app)
@@ -220,3 +291,73 @@ def test_live_state_moves_driver_toward_pickup_and_dropoff() -> None:
     trip_state_after = client.get("/api/v1/live/state").json()
     assert trip_state_after["driver_position"] != trip_state_before["driver_position"]
     assert trip_state_after["rider_position"] == trip_state_after["driver_position"]
+
+
+def test_live_messages_allowed_before_pickup_only() -> None:
+    live_ops_service.reset()
+    client = TestClient(app)
+
+    client.post("/api/v1/live/driver-status", json={"driver_user_id": "driver-chat", "status": "online"})
+    client.post(
+        "/api/v1/live/request",
+        json={
+            "rider_id": "rider-chat",
+            "rider_name": "Chat Rider",
+            "pickup_address": "Bonapriso, Douala",
+            "destination_address": "Akwa, Douala",
+            "ride_type": "economy",
+            "distance_km": 6.4,
+            "duration_minutes": 16,
+            "payment_method": "cash",
+            "notes": None,
+            "estimated_fare": 3160,
+        },
+    )
+
+    request_message = client.post(
+        "/api/v1/live/message",
+        json={
+            "sender_id": "rider-chat",
+            "sender_role": "rider",
+            "sender_name": "Chat Rider",
+            "message": "I am at the main gate.",
+        },
+    )
+    assert request_message.status_code == 200
+    assert len(request_message.json()["messages"]) == 1
+
+    client.post(
+        "/api/v1/live/accept",
+        json={
+            "driver_user_id": "driver-chat",
+            "driver_name": "Chat Driver",
+            "vehicle_summary": "Black Toyota Corolla",
+        },
+    )
+
+    accepted_message = client.post(
+        "/api/v1/live/message",
+        json={
+            "sender_id": "driver-chat",
+            "sender_role": "driver",
+            "sender_name": "Chat Driver",
+            "message": "I am two minutes away.",
+        },
+    )
+    assert accepted_message.status_code == 200
+    assert len(accepted_message.json()["messages"]) == 2
+
+    client.post("/api/v1/live/arrived", json={"driver_user_id": "driver-chat"})
+    client.post("/api/v1/live/start", json={"driver_user_id": "driver-chat"})
+
+    on_trip_message = client.post(
+        "/api/v1/live/message",
+        json={
+            "sender_id": "driver-chat",
+            "sender_role": "driver",
+            "sender_name": "Chat Driver",
+            "message": "This should not send during the trip.",
+        },
+    )
+    assert on_trip_message.status_code == 200
+    assert len(on_trip_message.json()["messages"]) == 2

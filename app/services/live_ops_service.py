@@ -8,6 +8,7 @@ from app.schemas.live import (
     DriverStatusRequest,
     LiveRideRequest,
     LiveStateResponse,
+    MessageRequest,
     ReplyRequest,
     TipRequest,
 )
@@ -24,6 +25,7 @@ class LiveOpsService:
             "request": None,
             "trip": None,
             "estimate": None,
+            "messages": [],
             "arrival_ready": False,
             "selected_tip_amount": None,
             "confirmed_tip_amount": None,
@@ -89,6 +91,7 @@ class LiveOpsService:
             self._state["selected_tip_amount"] = None
             self._state["confirmed_tip_amount"] = None
             self._state["driver_reply_sent"] = ""
+            self._state["messages"] = []
             self._state["estimate"] = {
                 "estimated_fare": payload.estimated_fare,
                 "ride_type": payload.ride_type,
@@ -166,6 +169,24 @@ class LiveOpsService:
             trip = self._state["trip"]
             if trip and trip["driver_user_id"] == payload.driver_user_id:
                 self._state["driver_reply_sent"] = payload.message
+            return LiveStateResponse(**deepcopy(self._state))
+
+    def send_message(self, payload: MessageRequest) -> LiveStateResponse:
+        with self._lock:
+            request = self._state["request"]
+            trip = self._state["trip"]
+            trip_allows_chat = trip and trip["stage"] in {"accepted", "driver_arrived"}
+            if not request and not trip_allows_chat:
+                return LiveStateResponse(**deepcopy(self._state))
+            self._state["messages"].append(
+                {
+                    "sender_id": payload.sender_id,
+                    "sender_role": payload.sender_role,
+                    "sender_name": payload.sender_name,
+                    "message": payload.message,
+                }
+            )
+            self._state["messages"] = self._state["messages"][-30:]
             return LiveStateResponse(**deepcopy(self._state))
 
 

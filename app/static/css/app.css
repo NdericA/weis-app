@@ -48,6 +48,56 @@ a {
     max-width: 1180px;
 }
 
+.login-page {
+    position: relative;
+    overflow-x: hidden;
+}
+
+.login-page .layout-shell {
+    position: relative;
+    z-index: 1;
+}
+
+.login-page .auth-shell {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+.login-page .site-header {
+    margin-bottom: 14px;
+}
+
+.login-page .brand-block {
+    align-items: center;
+}
+
+.login-page .auth-main {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+}
+
+.login-page .auth-form-panel {
+    width: 100%;
+}
+
+.login-page .brand-mark {
+    width: 88px;
+    height: 88px;
+}
+
+.login-page .stack-form {
+    gap: 14px;
+}
+
+.login-page .tip-status {
+    margin-top: 2px;
+}
+
 .site-header,
 .hero-banner,
 .panel {
@@ -74,16 +124,18 @@ a {
 }
 
 .brand-mark {
-    width: 52px;
-    height: 52px;
-    border-radius: 16px;
+    width: 74px;
+    height: 74px;
     display: grid;
     place-items: center;
-    background: linear-gradient(135deg, var(--brand), var(--brand-deep));
-    color: white;
-    font-family: "DM Sans", sans-serif;
-    font-size: 1.4rem;
-    font-weight: 700;
+    flex: 0 0 auto;
+}
+
+.brand-mark img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .brand-block h1,
@@ -167,6 +219,19 @@ a {
 
 .profile-actions {
     align-items: center;
+}
+
+.language-switch {
+    display: grid;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+}
+
+.language-switch select {
+    min-width: 92px;
+    margin-top: 0;
+    padding: 10px 12px;
 }
 
 .profile-chip {
@@ -498,6 +563,11 @@ a {
     color: var(--brand-deep);
 }
 
+.status-chip.danger {
+    background: rgba(218, 30, 40, 0.14);
+    color: var(--danger);
+}
+
 .stack-form {
     display: grid;
     gap: 16px;
@@ -520,7 +590,8 @@ label {
 }
 
 input,
-select {
+select,
+textarea {
     display: block;
     width: 100%;
     margin-top: 8px;
@@ -530,6 +601,11 @@ select {
     background: white;
     color: var(--ink);
     font: inherit;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 132px;
 }
 
 .button-row {
@@ -708,6 +784,67 @@ select {
     box-shadow: inset 4px 0 0 var(--brand);
 }
 
+.chat-panel {
+    margin-top: 18px;
+    padding: 18px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--line);
+    background: var(--surface-soft);
+}
+
+.chat-log {
+    min-height: 180px;
+    max-height: 260px;
+    overflow-y: auto;
+    display: grid;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: #ffffff;
+}
+
+.chat-empty {
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+}
+
+.chat-message {
+    max-width: 80%;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: #edf3ff;
+    border: 1px solid rgba(15, 98, 254, 0.14);
+}
+
+.chat-message.self {
+    margin-left: auto;
+    background: #eaf7ef;
+    border-color: rgba(25, 128, 56, 0.18);
+}
+
+.chat-message strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.82rem;
+}
+
+.chat-message span {
+    display: block;
+    color: var(--ink);
+    line-height: 1.45;
+}
+
+.chat-input-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.chat-input-row input {
+    margin-top: 0;
+}
+
 .custom-tip-row,
 .thankyou-actions,
 .quick-replies {
@@ -743,13 +880,70 @@ select {
     min-height: auto;
 }
 
+.application-list {
+    display: grid;
+    gap: 16px;
+}
+
+.application-card,
+.review-status-card {
+    background: var(--surface-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 18px;
+}
+
+.application-summary {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.application-meta {
+    display: grid;
+    gap: 6px;
+    margin-top: 14px;
+}
+
+.application-actions {
+    display: grid;
+    grid-template-columns: 160px 1fr auto 150px;
+    gap: 12px;
+    margin-top: 16px;
+    align-items: center;
+}
+
+.admin-reason-input {
+    margin-top: 0;
+}
+
+.admin-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.admin-checkbox input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+}
+
+.review-status-card {
+    margin-bottom: 16px;
+}
+
 @media (max-width: 1080px) {
     .hero-banner,
     .driver-layout,
     .ops-grid,
     .map-metrics,
     .tile-grid,
-    .ops-kpis {
+    .ops-kpis,
+    .application-summary,
+    .application-actions {
         grid-template-columns: 1fr;
     }
 
@@ -760,6 +954,31 @@ select {
 }
 
 @media (max-width: 860px) {
+    .layout-shell {
+        width: min(100%, calc(100% - 24px));
+        padding: 16px 0 28px;
+    }
+
+    .site-header,
+    .panel,
+    .hero-banner {
+        border-radius: 22px;
+    }
+
+    .site-header,
+    .panel {
+        padding: 18px;
+    }
+
+    .auth-main {
+        width: 100%;
+    }
+
+    .auth-form-panel {
+        width: 100%;
+        margin: 0 auto;
+    }
+
     .site-header,
     .header-actions,
     .panel-header,
@@ -768,8 +987,123 @@ select {
         align-items: stretch;
     }
 
+    .brand-block,
+    .header-actions {
+        width: 100%;
+        align-items: center;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .brand-block {
+        flex-direction: column;
+    }
+
+    .header-actions .button,
+    .header-actions a.button,
+    .button-row .button {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+
     .pricing-row,
     .request-summary {
         grid-template-columns: 1fr;
+    }
+
+    .chat-input-row {
+        flex-direction: column;
+    }
+
+    .login-page .auth-shell {
+        min-height: 100dvh;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .login-page .site-header {
+        margin-bottom: 10px;
+    }
+
+    .login-page .brand-mark {
+        width: 76px;
+        height: 76px;
+    }
+
+    .login-page .auth-form-panel {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 560px) {
+    body {
+        overflow-x: hidden;
+    }
+
+    .layout-shell {
+        width: calc(100% - 16px);
+        padding: 8px 0 20px;
+    }
+
+    .site-header,
+    .panel,
+    .hero-banner {
+        border-radius: 18px;
+    }
+
+    .site-header,
+    .panel {
+        padding: 14px;
+    }
+
+    .brand-mark {
+        width: 62px;
+        height: 62px;
+    }
+
+    .brand-block h1 {
+        font-size: 1.35rem;
+        line-height: 1.15;
+        text-align: center;
+    }
+
+    .auth-form-panel {
+        padding: 16px;
+    }
+
+    input,
+    select,
+    textarea,
+    .button {
+        min-height: 46px;
+    }
+
+    .login-page .auth-shell {
+        min-height: 100dvh;
+        padding-top: 6px;
+        padding-bottom: 8px;
+    }
+
+    .login-page .site-header {
+        padding: 12px;
+        margin-bottom: 8px;
+    }
+
+    .login-page .brand-mark {
+        width: 68px;
+        height: 68px;
+    }
+
+    .login-page .brand-block h1 {
+        font-size: 1.15rem;
+    }
+
+    .login-page .auth-form-panel {
+        padding: 14px;
+    }
+
+    .login-page .stack-form {
+        gap: 12px;
     }
 }

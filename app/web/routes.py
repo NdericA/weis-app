@@ -34,3 +34,13 @@ def rider_dashboard(request: Request) -> HTMLResponse:
 @router.get("/dashboard/driver", response_class=HTMLResponse)
 def driver_dashboard(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(request, "driver_dashboard.html", {})
+
+
+@router.get("/dashboard/admin", response_class=HTMLResponse)
+def admin_dashboard(request: Request) -> HTMLResponse:
+    return templates.TemplateResponse(request, "admin_dashboard.html", {})
+
+
+@router.get("/dashboard/driver-review", response_class=HTMLResponse)
+def driver_review_dashboard(request: Request) -> HTMLResponse:
+    return templates.TemplateResponse(request, "driver_review.html", {})

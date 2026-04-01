@@ -7,19 +7,28 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/app.css?v=20260327b">
+    <link rel="stylesheet" href="/static/css/app.css?v=20260329c">
 </head>
 <body>
     <div class="layout-shell">
         <header class="site-header">
             <div class="brand-block">
-                <div class="brand-mark">W</div>
+                <div class="brand-mark">
+                    <img src="/static/img/weis-logo.png" alt="WEIS logo">
+                </div>
                 <div>
                     <p class="kicker">WEIS Ride Platform</p>
                     <h1 id="dashboard-title">Driver dashboard</h1>
                 </div>
             </div>
             <div class="header-actions profile-actions">
+                <label class="language-switch">
+                    <span id="language-label">Language</span>
+                    <select id="language-toggle">
+                        <option value="en">EN</option>
+                        <option value="fr">FR</option>
+                    </select>
+                </label>
                 <div class="profile-chip">
                     <span class="summary-label">Signed in as</span>
                     <strong id="profile-name">-</strong>
@@ -162,6 +171,17 @@
                 <div class="driver-layout settlement-layout">
                     <div class="request-card">
                         <div class="panel-header small">
+                            <h4 id="chat-title">Chat with rider</h4>
+                        </div>
+                        <div id="driver-chat-log" class="chat-log"></div>
+                        <div class="chat-input-row">
+                            <input id="driver-chat-input" maxlength="120" placeholder="Message the rider before pickup">
+                            <button type="button" id="send-driver-message" class="button button-dark">Send</button>
+                        </div>
+                    </div>
+
+                    <div class="request-card">
+                        <div class="panel-header small">
                             <h4>Trip earnings</h4>
                         </div>
                         <div id="driver-earnings-box" class="request-summary compact-summary">
@@ -244,7 +264,7 @@
             </section>
         </main>
     </div>
-    <script src="/static/js/auth.js?v=20260327b"></script>
-    <script src="/static/js/app.js?v=20260327b"></script>
+    <script src="/static/js/auth.js?v=20260329c"></script>
+    <script src="/static/js/app.js?v=20260329b"></script>
 </body>
 </html>

@@ -6,6 +6,7 @@ from app.schemas.live import (
     DriverStatusRequest,
     LiveRideRequest,
     LiveStateResponse,
+    MessageRequest,
     ReplyRequest,
     TipRequest,
 )
@@ -62,3 +63,8 @@ def confirm_tip(payload: TipRequest) -> LiveStateResponse:
 @router.post("/reply", response_model=LiveStateResponse)
 def send_reply(payload: ReplyRequest) -> LiveStateResponse:
     return live_ops_service.send_reply(payload)
+
+
+@router.post("/message", response_model=LiveStateResponse)
+def send_message(payload: MessageRequest) -> LiveStateResponse:
+    return live_ops_service.send_message(payload)
